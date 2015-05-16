@@ -10,7 +10,7 @@ If you don't like the default template/style, just create new files in `/resourc
 
 ## Usage
 
-```bash
+```
 Usage:
     buddy.py INFILE [CONFIGFILE] [OUTFILE]
     buddy.py --help
