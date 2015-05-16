@@ -45,7 +45,6 @@ def parse_config(path):
         contents = f.read()
         j = json.loads(contents)
         ret['project_name'] = j.get('project_name', 'UNNAMED PROJECT')
-        ret['repo'] = j.get('repo', None)
         template = j.get('template', 'default')
         style = j.get('style', 'default')
 
