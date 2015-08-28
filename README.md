@@ -29,7 +29,7 @@ Options:
     "project_name": "Derp Project",
     "template": "default",
     "style": "default",
-    "repository": "https://github.com/cneill/bandit-buddy"
+    "repository": "https://github.com/cneill/bandit-buddy",
     "branch": "master"
 }
 ```
