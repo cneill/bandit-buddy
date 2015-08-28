@@ -29,6 +29,7 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 from jinja2 import Template
+from six.moves.urllib.parse import quote_plus
 
 
 CWD = os.path.realpath(os.path.curdir)
@@ -47,6 +48,8 @@ def parse_config(path):
         ret['project_name'] = j.get('project_name', 'UNNAMED PROJECT')
         template = j.get('template', 'default')
         style = j.get('style', 'default')
+        ret['repository'] = j.get('repository', None)
+        ret['branch'] = j.get('branch', 'master')
 
     ret['template'] = os.path.join(
         CWD, 'resources/templates/{0}.html'.format(template)
@@ -57,7 +60,6 @@ def parse_config(path):
     ret['stats_template'] = os.path.join(
         CWD, 'resources/templates/{0}_stats.html'.format(template)
     )
-
     ret['style'] = os.path.join(
         CWD, 'resources/styles/{0}.css'.format(style)
     )
@@ -122,7 +124,15 @@ def parse_results(contents, conf):
         issue = result['issue_text']
         severity = result['issue_severity']
         confidence = result['issue_confidence']
-        path = result['filename']
+        if conf['repository'] and conf['branch']:
+            file_path = quote_plus(result['filename']).replace("%2F", "/")
+            path = '{repo}/blob/{branch}/{path}'.format(
+                repo=conf['repository'], branch=conf['branch'],
+                path=file_path)
+            if result['line_number']:
+                path += '#L{0}'.format(result['line_number'])
+        else:
+            path = result['filename']
         code = highlight(result['code'], PythonLexer(), HtmlFormatter())
         ret['results'] += result_template.render(
             issue=issue, severity=severity, confidence=confidence, path=path,
