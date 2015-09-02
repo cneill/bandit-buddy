@@ -124,15 +124,18 @@ def parse_results(contents, conf):
         issue = result['issue_text']
         severity = result['issue_severity']
         confidence = result['issue_confidence']
+        file_path = result['filename']
         if conf['repository'] and conf['branch']:
-            file_path = quote_plus(result['filename']).replace("%2F", "/")
-            path = '{repo}/blob/{branch}/{path}'.format(
-                repo=conf['repository'], branch=conf['branch'],
-                path=file_path)
+            if file_path[:2] == "./":
+                file_path = file_path[2:]
+            file_path = quote_plus(file_path).replace("%2F", "/")
+            path = os.path.join(
+                conf['repository'], 'blob', conf['branch'], file_path
+            )
             if result['line_number']:
                 path += '#L{0}'.format(result['line_number'])
         else:
-            path = result['filename']
+            path = file_path
         code = highlight(result['code'], PythonLexer(), HtmlFormatter())
         ret['results'] += result_template.render(
             issue=issue, severity=severity, confidence=confidence, path=path,
